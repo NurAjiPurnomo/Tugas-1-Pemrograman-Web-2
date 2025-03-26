@@ -12,8 +12,8 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get('produk', function(){
-    $title = 'Produk';
+Route::get('products', function(){
+    $title = 'Produts';
     return view('web.products' , ['title'=>$title]);
 });
     

@@ -7,33 +7,46 @@ use App\Models\Categories;
 
 class HomepageController extends Controller
 {
- public function index()
- {
-   $categories = Categories::all();
-   return view('web.homepage', ['categories'=>$categories]);
- }
- public function products()
- {
- return view('web.products');
- }
- public function product($slug){
-    return view('web.product', ['slug' => $slug]);
+    public function index()
+    {
+        $categories = Categories::all();
+        $title = 'Homepage';
+        return view('web.homepage', ['categories' => $categories, 'title' => $title]);
     }
+
+    public function products()
+    {
+        $title = 'Products';
+        return view('web.products', ['title' => $title]);
+    }
+
+    public function product($slug)
+    {
+        $title = 'Product Details';
+        return view('web.product', ['slug' => $slug, 'title' => $title]);
+    }
+
     public function categories()
     {
-    return view('web.categories');
+        $title = 'Categories';
+        return view('web.categories', ['title' => $title]);
     }
+
     public function category($slug)
     {
-    return view('web.category_by_slug', ['slug' => $slug]);
+        $title = 'Category: ' . ucfirst($slug);
+        return view('web.category_by_slug', ['slug' => $slug, 'title' => $title]);
     }
+
     public function cart()
     {
-    return view('web.cart');
+        $title = 'Your Cart';
+        return view('web.cart', ['title' => $title]);
     }
-   
+
     public function checkout()
     {
-    return view('web.checkout');
+        $title = 'Checkout';
+        return view('web.checkout', ['title' => $title]);
     }
-   }
+}

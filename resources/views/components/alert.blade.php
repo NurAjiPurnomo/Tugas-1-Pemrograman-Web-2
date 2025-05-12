@@ -1,2 +1,3 @@
-<div id="liveAlertPlaceholder"></div>
-<button type="button" class="btn btn-primary" id="liveAlertBtn">Show live alert</button>
+<div class="alert alert-primary" role="alert">
+  Dapatkan diskon spesial untuk koleksi terbaru kami! <a href="#" class="alert-link">Lihat sekarang</a>.
+</div>

@@ -15,7 +15,7 @@
                 <flux:navlist.group :heading="('Menu')" class="grid">
                      <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                      <flux:navlist.item icon="adjustments-horizontal" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
-                     <flux:navlist.item icon="computer-desktop" :href="route('products')" :current="request()->routeIs('products')" wire:navigate>{{ __('Products') }}</flux:navlist.item>
+                     <flux:navlist.item icon="computer-desktop" :href="route('products.index')" :current="request()->routeIs('products.index')" wire:navigate>{{ __('Products') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

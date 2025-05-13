@@ -10,13 +10,21 @@ class ProductCategoryController extends Controller
 {
     public function index()
     {
+        $title = 'Product Categories';
         $categories = ProductCategory::all();
         return view('dashboard.categories.index', [
+            'title' => $title,
             'categories' => $categories,
         ]);
     }
 
-    public function create()
+/*************  ✨ Windsurf Command ⭐  *************/
+    /**
+     * Menampilkan halaman tambah kategori produk
+     * 
+     * @return \Illuminate\Http\Response
+     */
+/*******  57208633-c99d-4473-8243-75ff2fc2b896  *******/    public function create()
     {
         return view('dashboard.categories.create');
     }

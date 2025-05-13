@@ -16,10 +16,9 @@
         @method('PUT')
 
         <flux:input label="Name" name="name" class="mb-3" placeholder="Product Name" value="{{ old('name', $product->name) }}" />
-        <flux:select label="Category" name="category_slug" class="mb-3">
+        <flux:select label="Category" name="product_category_id" class="mb-3">
             @foreach ($categories as $category)
-                <option value="{{ $category->slug }}" {{ $product->category->slug == $category->slug ? 'selected' : '' }}>{{ $category->name }}</option>
-
+                <option value="{{ $category->id }}" {{ $product->product_category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
             @endforeach
         </flux:select>
 
@@ -28,8 +27,8 @@
         <flux:input label="Stock" name="stock" type="number" class="mb-3" placeholder="Available Stock" value="{{ old('stock', $product->stock) }}" />
         
         <div class="mb-3">
-            <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
-            <input type="file" name="image" id="image" class="mt-1 block w-full text-sm text-gray-500 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-md" />
+            <label for="image_url" class="block text-sm font-medium text-gray-700">Image</label>
+            <input type="file" name="image_url" id="image_url" class="mt-1 block w-full text-sm text-gray-500 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-md" />
             @if ($product->image_url)
             <div class="mt-2">
                 <img src="{{ asset($product->image_url) }}" alt="Product Image" class="w-32 h-32 object-cover">

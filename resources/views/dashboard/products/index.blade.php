@@ -47,7 +47,7 @@
                         </td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             <p class="text-gray-900 whitespace-no-wrap">
-                                @if($product->image)
+                                @if($product->image_url)
                                     <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->name }}" class="h-10 w-10 rounded-full">
                                 @else
                                     <div class="h-10 w-10 bg-gray-200 flex items-center justify-center rounded">

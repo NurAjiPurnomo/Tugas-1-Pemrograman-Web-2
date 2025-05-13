@@ -10,9 +10,9 @@ Route::get('/products', [HomepageController::class, 'products'])->name('products
 
 // Volt::route('products', 'products')->name('products');
 
-Route::get('/categories', function() { 
-    return "halaman categories product"; 
-});
+// Route::get('/categories', function() { 
+//     return "halaman categories product"; 
+// });
 
 
 Route::view('dashboard', 'dashboard')
@@ -22,10 +22,10 @@ Route::view('dashboard', 'dashboard')
 
 Route::resource('categories', ProductCategoryController::class);
 
-    
-Route::view('dashboard', 'dashboard')
-->middleware(['auth', 'verified'])
-->name('dashboard');
+Route::middleware(['web'])->group(function () {
+Route::resource('products', \App\Http\Controllers\ProductController::class);
+});
+
 
 Route::middleware(['auth'])->group(function () {
 Route::redirect('settings', 'settings/profile');

@@ -1,41 +1,114 @@
-<x-layouts.app :title="'Add Category'">
-    <div class="flex justify-center items-center min-h-screen py-10">
-        <div class="w-full max-w-lg p-8 bg-white rounded-lg shadow-lg">
-            <h1 class="text-2xl font-bold text-blue-600 mb-6 text-center">Add New Product Category</h1>
+<?php
 
-            <form action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+namespace App\Http\Controllers;
 
-                <!-- Name Input -->
-                <div class="mb-4">
-                    <label class="block text-lg font-semibold text-gray-700 mb-2">Category Name</label>
-                    <input type="text" name="name" class="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required placeholder="Enter category name">
-                </div>
+use App\Models\Product;
+use App\Models\ProductCategory;
+use Illuminate\Http\Request;
 
-                <!-- Slug Input -->
-                <div class="mb-4">
-                    <label class="block text-lg font-semibold text-gray-700 mb-2">Slug</label>
-                    <input type="text" name="slug" class="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required placeholder="Enter category slug">
-                </div>
+class ProductController extends Controller
+{
+    // Menampilkan daftar produk
+    public function index()
+    {
+        $products = Product::with('category')->paginate(10);
+        return view('dashboard.products.index', compact('products'));
+    }
 
-                <!-- Description Textarea -->
-                <div class="mb-4">
-                    <label class="block text-lg font-semibold text-gray-700 mb-2">Description</label>
-                    <textarea name="description" class="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" placeholder="Add a description"></textarea>
-                </div>
+    // Menampilkan form untuk menambahkan produk baru
+    public function create()
+    {
+        $categories = ProductCategory::all();
+        return view('dashboard.products.create', compact('categories'));
+    }
 
-                <!-- Image Input -->
-                <div class="mb-4">
-                    <label class="block text-lg font-semibold text-gray-700 mb-2">Category Image (Optional)</label>
-                    <input type="file" name="image" class="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+    // Menyimpan produk baru
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'product_category_id' => 'required|exists:product_categories,id',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
+            'image_url' => 'nullable|image|max:2048',
+        ]);
 
-                <!-- Submit and Cancel Buttons -->
-                <div class="flex items-center justify-between mt-6">
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">Save Category</button>
-                    <a href="{{ route('categories.index') }}" class="text-gray-600 hover:underline">Cancel</a>
-                </div>
-            </form>
-        </div>
-    </div>
-</x-layouts.app>
+        $slug = \Str::slug($request->name);
+        $count = Product::where('slug', 'LIKE', "{$slug}%")->count();
+        if ($count > 0) {
+            $slug = $slug . '-' . ($count + 1);
+        }
+
+        $sku = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $request->name), 0, 3)) . '-' . strtoupper(uniqid());
+
+        $product = Product::create([
+            'name' => $request->name,
+            'slug' => $slug,
+            'sku' => $sku,
+            'description' => $request->description,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'product_category_id' => $request->product_category_id,
+            'image_url' => $request->hasFile('image_url') ? $request->file('image_url')->store('products', 'public') : null,
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('products.index')->with('successMessage', 'Product added successfully!');
+    }
+
+    // Menampilkan form untuk mengedit produk
+    public function edit(Product $product)
+    {
+        $categories = ProductCategory::all();
+        return view('dashboard.products.edit', compact('product', 'categories'));
+    }
+
+    // Mengupdate produk
+    public function update(Request $request, Product $product)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:products,slug,' . $product->id,
+            'product_category_id' => 'required|exists:product_categories,id',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
+            'image_url' => 'nullable|image|max:2048',
+        ]);
+
+        $slug = $request->slug;
+        if (empty($slug)) {
+            $slug = \Str::slug($request->name);
+            $count = Product::where('slug', 'LIKE', "{$slug}%")->where('id', '!=', $product->id)->count();
+            if ($count > 0) {
+                $slug = $slug . '-' . ($count + 1);
+            }
+        }
+
+        $dataToUpdate = [
+            'name' => $request->name,
+            'slug' => $slug,
+            'description' => $request->description,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'product_category_id' => $request->product_category_id,
+        ];
+
+        if ($request->hasFile('image_url')) {
+            $dataToUpdate['image_url'] = $request->file('image_url')->store('products', 'public');
+        }
+
+        $product->update($dataToUpdate);
+
+        return redirect()->route('products.index')->with('successMessage', 'Product updated successfully!');
+    }
+
+    // Menghapus produk
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        return redirect()->route('products.index')->with('successMessage', 'Product deleted successfully!');
+    }
+}
